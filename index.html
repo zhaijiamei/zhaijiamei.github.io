@@ -97,7 +97,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/07/17/hello-world/" data-id="cj5dt1szt0000058vtvdem1p1" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2017/07/17/hello-world/" data-id="cj5eow97k0000c38vrisw1np8" class="article-share-link">Delen</a>
       
       
     </footer>
@@ -121,7 +121,46 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/17/学习/">学习</a>
+      <a class="article-title" href="/2017/07/17/学习/">自己封装个cookie</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#<font color="hotpink">document.cookie</font></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//用户可以传进来 要存的键值对，过期时间，存储的路径</span></div><div class="line">       <span class="function"><span class="keyword">function</span> <span class="title">setCookie</span>(<span class="params">key, value, option</span>)</span>&#123;</div><div class="line">           <span class="built_in">document</span>.cookie = key + <span class="string">"="</span> + value + <span class="string">";expires="</span> + option.expires.toGMTString() + <span class="string">";path="</span> + option.path;  </div><div class="line">       &#125;</div><div class="line"></div><div class="line">       setCookie(<span class="string">"name"</span>, <span class="string">"王麻子"</span>, &#123;</div><div class="line">           <span class="attr">expires</span>: <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="string">"2050-07-07 07:07:07"</span>),</div><div class="line">           <span class="attr">path</span>: <span class="string">"/"</span></div><div class="line">       &#125;)</div><div class="line"></div><div class="line">       <span class="function"><span class="keyword">function</span> <span class="title">getCookie</span>(<span class="params"></span>)</span>&#123;</div><div class="line">           <span class="comment">//将cookie中存储的所有的内容用;进行分割</span></div><div class="line">           <span class="comment">//cookies获取到的就是一个包含 "key=value" 字符串的数组</span></div><div class="line">           <span class="keyword">var</span> cookies = <span class="built_in">document</span>.cookie.split(<span class="string">';'</span>);</div><div class="line"></div><div class="line">           <span class="keyword">var</span> obj = &#123;&#125;;</div><div class="line">           </div><div class="line">           <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; cookies.length; i ++)&#123;</div><div class="line">               <span class="comment">//cookie 就是  "key=value"</span></div><div class="line">               <span class="keyword">var</span> cookie = cookies[i];</div><div class="line">               </div><div class="line">               <span class="keyword">var</span> keyValuePair = cookie.split(<span class="string">"="</span>);</div><div class="line">               </div><div class="line">               <span class="comment">//将数据以 键 作为属性名  以值 作为属性值 存入obj对象中</span></div><div class="line">               obj[keyValuePair[<span class="number">0</span>].trim()] = keyValuePair[<span class="number">1</span>];</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           <span class="keyword">return</span> obj;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       <span class="function"><span class="keyword">function</span> <span class="title">getCookieByKey</span>(<span class="params">key</span>)</span>&#123;</div><div class="line">           <span class="keyword">return</span> getCookie()[key];</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/07/17/学习/" data-id="cj5eow97q0001c38vfogvrqzl" class="article-share-link">Delen</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/study/">study</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-跨域解决以及jsonp的原理" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/22/跨域解决以及jsonp的原理/" class="article-date">
+  <time datetime="2015-12-22T02:25:27.000Z" itemprop="datePublished">2015-12-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/22/跨域解决以及jsonp的原理/">跨域解决以及jsonp的原理</a>
     </h1>
   
 
@@ -133,10 +172,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/07/17/学习/" data-id="cj5dt1t040002058v80lymf3d" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2015/12/22/跨域解决以及jsonp的原理/" data-id="cj5eow97u0002c38v4lx4skdi" class="article-share-link">Delen</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/study/">study</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jsonp/">jsonp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/跨域/">跨域</a></li></ul>
 
     </footer>
   </div>
@@ -187,7 +226,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/07/21/前端模块化/" data-id="cj5dt1t000001058vfls9054q" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2015/07/21/前端模块化/" data-id="cj5eow9820004c38vb6m5ivp0" class="article-share-link">Delen</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/require-js/">require.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/模块化/">模块化</a></li></ul>
@@ -211,7 +250,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Labels</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/require-js/">require.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/study/">study</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/模块化/">模块化</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/jsonp/">jsonp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/require-js/">require.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/study/">study</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/模块化/">模块化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a></li></ul>
     </div>
   </div>
 
@@ -221,7 +260,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/require-js/" style="font-size: 10px;">require.js</a> <a href="/tags/study/" style="font-size: 10px;">study</a> <a href="/tags/模块化/" style="font-size: 10px;">模块化</a>
+      <a href="/tags/jsonp/" style="font-size: 10px;">jsonp</a> <a href="/tags/require-js/" style="font-size: 10px;">require.js</a> <a href="/tags/study/" style="font-size: 10px;">study</a> <a href="/tags/模块化/" style="font-size: 10px;">模块化</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
     </div>
   </div>
 
@@ -230,7 +269,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archieven</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li></ul>
     </div>
   </div>
 
@@ -247,7 +286,11 @@
           </li>
         
           <li>
-            <a href="/2017/07/17/学习/">学习</a>
+            <a href="/2017/07/17/学习/">自己封装个cookie</a>
+          </li>
+        
+          <li>
+            <a href="/2015/12/22/跨域解决以及jsonp的原理/">跨域解决以及jsonp的原理</a>
           </li>
         
           <li>
