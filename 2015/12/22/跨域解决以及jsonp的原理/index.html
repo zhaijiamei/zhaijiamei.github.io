@@ -5,14 +5,17 @@
   
   <title>跨域解决以及jsonp的原理 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="跨域,jsonp">
+  <meta name="description" content="跨域由于浏览器的同源策略，域名中（协议，域名，端口）有任意一部分不一致，那么就会产生跨域请求！ 浏览器会直接将跨域请求阻止！ 跨域的解决方案1. jsonp原理： 通过动态创建script标签，将sript标签的src属性设置为要请求的接口地址，这样将script加到页面上的时候，会自动向接口发送请求了！ 服务器端返回的数据会直接被当做js代码执行！ 服务器端返回的数据，有格式的要求，必须是一个函">
+<meta name="keywords" content="跨域,jsonp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="跨域解决以及jsonp的原理">
 <meta property="og:url" content="http://yoursite.com/2015/12/22/跨域解决以及jsonp的原理/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:updated_time" content="2017-07-22T02:30:18.000Z">
+<meta property="og:description" content="跨域由于浏览器的同源策略，域名中（协议，域名，端口）有任意一部分不一致，那么就会产生跨域请求！ 浏览器会直接将跨域请求阻止！ 跨域的解决方案1. jsonp原理： 通过动态创建script标签，将sript标签的src属性设置为要请求的接口地址，这样将script加到页面上的时候，会自动向接口发送请求了！ 服务器端返回的数据会直接被当做js代码执行！ 服务器端返回的数据，有格式的要求，必须是一个函">
+<meta property="og:updated_time" content="2017-07-22T03:28:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="跨域解决以及jsonp的原理">
+<meta name="twitter:description" content="跨域由于浏览器的同源策略，域名中（协议，域名，端口）有任意一部分不一致，那么就会产生跨域请求！ 浏览器会直接将跨域请求阻止！ 跨域的解决方案1. jsonp原理： 通过动态创建script标签，将sript标签的src属性设置为要请求的接口地址，这样将script加到页面上的时候，会自动向接口发送请求了！ 服务器端返回的数据会直接被当做js代码执行！ 服务器端返回的数据，有格式的要求，必须是一个函">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -52,7 +55,7 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -83,11 +86,30 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="跨域"><a href="#跨域" class="headerlink" title="跨域"></a><font color="hotpink">跨域</font></h2><p>由于浏览器的同源策略，域名中（协议，域名，端口）有任意一部分不一致，那么就会产生跨域请求！ 浏览器会直接将跨域请求阻止！</p>
+<h2 id="跨域的解决方案"><a href="#跨域的解决方案" class="headerlink" title="跨域的解决方案"></a>跨域的解决方案</h2><h3 id="1-jsonp"><a href="#1-jsonp" class="headerlink" title="1. jsonp"></a>1. jsonp</h3><p>原理： 通过动态创建script标签，将sript标签的src属性设置为要请求的接口地址，这样将script加到页面上的时候，会自动向接口发送请求了！ 服务器端返回的数据会直接被当做js代码执行！</p>
+<p>服务器端返回的数据，有格式的要求，必须是一个函数调用的形式<br>函数名(数据)</p>
+<p>这个函数可以在请求之前就在全局创建好，那么请求完成之后，会自动调用这个函数，就类似于请求的成功的回调函数了！！</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">jsonp</span>(<span class="params">url, callback</span>)</span>&#123;</div><div class="line">    <span class="keyword">var</span> cbName = <span class="string">"jsonp"</span> + (<span class="keyword">new</span> <span class="built_in">Date</span>() - <span class="number">0</span>) + <span class="built_in">parseInt</span>(<span class="built_in">Math</span>.random() * <span class="number">100000</span>);</div><div class="line">    <span class="built_in">window</span>[cbName] = callback;</div><div class="line"></div><div class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">"script"</span>);</div><div class="line">    <span class="comment">//将存在全局的函数名称 作为参数传递给了后台</span></div><div class="line">    <span class="comment">//后台在接收到这个参数之后，会将返回的数据 </span></div><div class="line">    <span class="comment">//设置成   success(&#123;&#125;)</span></div><div class="line">    script.src = url + <span class="string">"?callback="</span> + cbName;</div><div class="line">    <span class="built_in">document</span>.body.appendChid(script);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-后台在响应头中添加一个-Access-Control-Allow-Origin"><a href="#2-后台在响应头中添加一个-Access-Control-Allow-Origin" class="headerlink" title="2. 后台在响应头中添加一个 Access-Control-Allow-Origin: *"></a>2. 后台在响应头中添加一个 Access-Control-Allow-Origin: *</h3><h3 id="3-反向代理"><a href="#3-反向代理" class="headerlink" title="3. 反向代理"></a>3. 反向代理</h3><p>配置步骤</p>
+<ol>
+<li>打开 httpd.conf</li>
+</ol>
+<p>找到如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#LoadModule proxy_module modules/mod_proxy.so</div><div class="line">#LoadModule proxy_http_module modules/mod_proxy_http.so</div></pre></td></tr></table></figure></p>
+<p>去掉前面的#   这两行可能不在一块，分开找就行</p>
+<ol>
+<li>打开 extra/httpd-vhosts.conf</li>
+</ol>
+<p>找到博学谷网站的virtual-host节点</p>
+<p>在里面添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ProxyRequests off</div><div class="line">ProxyPass /api http://api.botue.com/v3</div></pre></td></tr></table></figure></p>
+<p>ProxyPass 本域名的路径 远程接口的域名</p>
+<p>用本域名的一个指定的路径，来代表远程的接口的域名</p>
+<p>可以直接访问本域名的这个路径，就相当于是向接口发送了请求！！！</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/12/22/跨域解决以及jsonp的原理/" data-id="cj5eow97u0002c38v4lx4skdi" class="article-share-link">Delen</a>
+      <a data-url="http://yoursite.com/2015/12/22/跨域解决以及jsonp的原理/" data-id="cj5eow97u0002c38v4lx4skdi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/jsonp/">jsonp</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/跨域/">跨域</a></li></ul>
@@ -99,7 +121,7 @@
 <nav id="article-nav">
   
     <a href="/2017/07/17/学习/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Nieuwer</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           自己封装个cookie
@@ -109,7 +131,7 @@
   
   
     <a href="/2015/07/21/前端模块化/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ouder</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">前端模块化</div>
     </a>
   
@@ -127,7 +149,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/jsonp/">jsonp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/require-js/">require.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/study/">study</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/模块化/">模块化</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a></li></ul>
     </div>
@@ -146,9 +168,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li></ul>
     </div>
   </div>
 
@@ -156,13 +178,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
-        
-          <li>
-            <a href="/2017/07/17/hello-world/">我的博客</a>
-          </li>
         
           <li>
             <a href="/2017/07/17/学习/">自己封装个cookie</a>
@@ -174,6 +192,10 @@
         
           <li>
             <a href="/2015/07/21/前端模块化/">前端模块化</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/01/hello-world/">我的博客</a>
           </li>
         
       </ul>
