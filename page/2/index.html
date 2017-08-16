@@ -316,6 +316,126 @@
 
 
   
+    <article id="post-购物车原理-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/16/购物车原理-1/">购物车原理</a>
+    </h1>
+  
+
+        
+        <a href="/2016/08/16/购物车原理-1/" class="archive-article-date">
+  	<time datetime="2016-08-16T13:27:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-08-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="购物车的实现原理"><a href="#购物车的实现原理" class="headerlink" title="购物车的实现原理"></a>购物车的实现原理</h2><p>购物车相当于现实中超市的购物车，不同的是一个是实体车，一个是虚拟车而已。用户可以在购物网站的不同页面之间跳转，以选购自己喜爱的商品，点击购买时，该商品就自动保存到你的购物车中，重复选购后，最后将选中的所有商品放在购物车中统一到付款台结账，这也是尽量让客户体验到现实生活中购物的感觉。服务器通过追踪每个用户的行动，以保证在结账时每件商品都物有其主。</p>
+<pre><code>购物车的功能包括以下几项：
+</code></pre><p>n         把商品添加到购物车，即订购</p>
+<p>n         删除购物车中已定购的商品</p>
+<p>n         修改购物车中某一本图书的订购数量</p>
+<p>n         清空购物车</p>
+<p>n         显示购物车中商品清单及数量、价格</p>
+<pre><code>实现购物车的关键在于服务器识别每一个用户并维持与他们的联系。但是HTTP协议是一种“无状态(Stateless)”的协议，因而服务器不能记住是谁在购买商品，当把商品加入购物车时，服务器也不知道购物车里原先有些什么，使得用户在不同页面间跳转时购物车无法“随身携带”，这都给购物车的实现造成了一定的困难。
+
+目前购物车的实现主要是通过cookie、session或结合数据库的方式。下面分析一下它们的机制及作用。
+</code></pre><ol>
+<li><p>cookie</p>
+<p>  cookie是由服务器产生，存储在客户端的一段信息。它定义了一种Web服务器在客户端存储和返回信息的机制，cookie文件它包含域、路径、生存期、和由服务器设置的变量值等内容。当用户以后访问同一个Web服务器时，浏览器会把cookie原样发送给服务器。通过让服务器读取原先保存到客户端的信息，网站能够为浏览者提供一系列的方便，例如在线交易过程中标识用户身份、安全要求不高的场合避免用户重复输入名字和密码、门户网站的主页定制、有针对性地投放广告等等。利用cookie的特性，大大扩展了WEB应用程序的功能，不仅可以建立服务器与客户机的联系，因为cookie可以由服务器定制，因此还可以将购物信息生成cookie值存放在客户端，从而实现购物车的功能。用基于cookie的方式实现服务器与浏览器之间的会话或购物车，有以下特点：</p>
+</li>
+</ol>
+<p>n         cookie存储在客户端，且占用很少的资源，浏览器允许存放300个cookie，每个cookie的大小为4KB，足以满足购物车的要求，同时也减轻了服务器的负荷；</p>
+<p>n         cookie为浏览器所内置，使用方便。即使用户不小心关闭了浏览器窗口，只要在cookie定义的有效期内，购物车中的信息也不会丢失；</p>
+<p>n         cookie不是可执行文件，所以不会以任何方式执行，因此也不会带来病毒或攻击用户的系统；</p>
+<p>n         基于cookie的购物车要求用户浏览器必须支持并设置为启用cookie，否则购物车则失效；</p>
+<p>n         存在着关于cookie侵犯访问者隐私权的争论，因此有些用户会禁止本机的cookie功能。</p>
+<ol>
+<li><p>session</p>
+<p>  session是实现购物车的另一种方法。session提供了可以保存和跟踪用户的状态信息的功能，使当前用户在session中定义的变量和对象能在页面之间共享，但是不能为应用中其他用户所访问，它与cookie最重大的区别是，session将用户在会话期间的私有信息存储在服务器端，提高了安全性。在服务器生成session后，客户端会生成一个sessionid识别号保存在客户端，以保持和服务器的同步。这个sessionid是只读的，如果客户端禁止cookie功能，session会通过在URL中附加参数，或隐含在表单中提交等其他方式在页面间传送。因此利用session实施对用户的管理则更为安全、有效。</p>
+<p>  同样，利用session也能实现购物车，这种方式的特点是：</p>
+</li>
+</ol>
+<p>n         session用新的机制保持与客户端的同步，不依赖于客户端设置；</p>
+<p>n         与cookie相比，session是存储在服务器端的信息，因此显得更为安全，因此可将身份标示，购物等信息存储在session中；</p>
+<p>n         session会占用服务器资源，加大服务器端的负载，尤其当并发用户很多时，会生成大量的session，影响服务器的性能；</p>
+<p>n         因为session存储的信息更敏感，而且是以文件形式保存在服务器中，因此仍然存在着安全隐患。</p>
+<ol>
+<li><p>结合数据库的方式</p>
+<p>  这也是目前较普遍的模式，在这种方式中，数据库承担着存储购物信息的作用，session或cookie则用来跟踪用户。这种方式具有以下特点：</p>
+</li>
+</ol>
+<p>n         数据库与cookie分别负责记录数据和维持会话，能发挥各自的优势，使安全性和服务器性能都得到了提高；</p>
+<p>n         每一个购物的行为，都要直接建立与数据库的连接，直至对表的操作完成后，连接才释放。当并发用户很多时，会影响数据库的性能，因此，这对数据库的性能提出了更高的要求；</p>
+<p>n         使cookie维持会话有赖客户端的支持。</p>
+<p>各种方式的选择：</p>
+<pre><code>虽然cookie可用来实现购物车，但必须获得浏览器的支持，再加上它是存储在客户端的信息，极易被获取，所以这也限制了它存储更多，更重要的信息。所以一般cookie只用来维持与服务器的会话，例如国内最大的当当网络书店就是用cookie保持与客户的联系，但是这种方式最大的缺点是如果客户端不支持cookie就会使购物车失效。
+
+Session 能很好地与交易双方保持会话，可以忽视客户端的设置。在购物车技术中得到了广泛的应用。但session的文件属性使其仍然留有安全隐患。
+</code></pre><p>结合数据库的方式虽然在一定程度上解决了上述的问题，但从上面的例子可以看出：在这种购物流程中涉及到对数据库表的频繁操作，尤其是用户每选购一次商品，都要与数据库进行连接，当用户很多的时候就加大了服务器与数据库的负荷。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">cookie</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">session</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2016/08/16/购物车原理-1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-图片裁切插件-Jcrop使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -482,85 +602,6 @@
 
 
   
-    <article id="post-表单验证插件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/24/表单验证插件/">表单验证插件</a>
-    </h1>
-  
-
-        
-        <a href="/2016/07/24/表单验证插件/" class="archive-article-date">
-  	<time datetime="2016-07-24T03:31:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-07-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>表单验证插件validate，本案例是jquery插件<br>git@github.com:DiegoLopesLima/validate.git</p>
-</blockquote>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 条件验证，在表单元素中加入一个属性：data-conditional:“isAdult”，这个属性值是，validate（）的对象参数conditional的属性名</span></div><div class="line"><span class="comment">//在validate的参数中，传入一个参数：参数是对象，对象名conditional，对象中的键值对，值都是返回值为布尔类型的函数。函数需要传入一个参数，这个参数是正在验证的input元素的value值</span></div><div class="line"> data-description：制定当前表单项，在验证通过呢或者不通过，</div><div class="line"> data-descrip设置当前表单提示项的位置</div><div class="line">$(<span class="string">"form"</span>).validate(&#123;</div><div class="line">    <span class="attr">conditional</span>:&#123;</div><div class="line">        <span class="attr">isAdult</span>:<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &#125;)</div></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2016/07/24/表单验证插件/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">form-validate</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2016/07/24/表单验证插件/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-nprogress插件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -650,6 +691,85 @@
 
 
   
+    <article id="post-表单验证插件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/24/表单验证插件/">表单验证插件</a>
+    </h1>
+  
+
+        
+        <a href="/2016/07/24/表单验证插件/" class="archive-article-date">
+  	<time datetime="2016-07-24T03:31:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-07-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>表单验证插件validate，本案例是jquery插件<br>git@github.com:DiegoLopesLima/validate.git</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 条件验证，在表单元素中加入一个属性：data-conditional:“isAdult”，这个属性值是，validate（）的对象参数conditional的属性名</span></div><div class="line"><span class="comment">//在validate的参数中，传入一个参数：参数是对象，对象名conditional，对象中的键值对，值都是返回值为布尔类型的函数。函数需要传入一个参数，这个参数是正在验证的input元素的value值</span></div><div class="line"> data-description：制定当前表单项，在验证通过呢或者不通过，</div><div class="line"> data-descrip设置当前表单提示项的位置</div><div class="line">$(<span class="string">"form"</span>).validate(&#123;</div><div class="line">    <span class="attr">conditional</span>:&#123;</div><div class="line">        <span class="attr">isAdult</span>:<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    &#125;)</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2016/07/24/表单验证插件/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">form-validate</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2016/07/24/表单验证插件/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-AMD模块化+Requirejs的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -699,81 +819,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2016/07/24/AMD模块化+Requirejs的使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-ajax请求-全局变量" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/24/ajax请求-全局变量/">ajax请求+全局变量</a>
-    </h1>
-  
-
-        
-        <a href="/2016/07/24/ajax请求-全局变量/" class="archive-article-date">
-  	<time datetime="2016-07-24T02:29:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2016-07-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>$.ajax({})发送请求：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">$.ajax(&#123;</div><div class="line">    <span class="attr">url</span>:<span class="string">"url字符串"</span>,</div><div class="line">    <span class="attr">type</span>:<span class="string">"get或者post"</span>,</div><div class="line">    <span class="attr">beforesend</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;ajax请求发送前的DOM处理&#125;,</div><div class="line">    <span class="attr">data</span>:&#123;</div><div class="line">        <span class="attr">key1</span>:value1</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">dataType</span>:<span class="string">"json或者text等"</span>,</div><div class="line">    <span class="attr">success</span>: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;请求发送成功后处理DOM的回调函数&#125;，</div><div class="line">    error: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;请求发送失败的回调&#125;,</div><div class="line">    <span class="attr">complete</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;请求发送完毕，不管是成功还是失败，都会执行的代码&#125;</div><div class="line">    &#125;)</div></pre></td></tr></table></figure></p>
-<p>ajax的全局变量<br>```js<br>$(document).ajaxStart(function (){})<br>$(document).ajaxSend(function (){})<br>$(document).ajaxSuccess(function (){})<br>$(document).ajaxError(function (){})<br>$(document).ajaxComplete(function (){})<br>$(document).ajaxStop(function (){})</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">ajax</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2016/07/24/ajax请求-全局变量/">展开全文 >></a>
         </p>
       
 
@@ -900,23 +945,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">study</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">require.js</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">模块化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">跨域</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">jsonp</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -928,15 +957,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">H5</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">FileReader</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -976,14 +1005,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">npm</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">进度条</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">模板引擎</a>
               </li>
              
@@ -996,7 +1017,39 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">进度条</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">npm</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">jquery</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">require.js</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">study</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">cookie</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">session</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">跨域</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">jsonp</a>
               </li>
              
               <li class="article-tag-list-item">
